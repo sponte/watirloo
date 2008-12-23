@@ -1,4 +1,3 @@
-require File.dirname(__FILE__) + '/watirloo'
 =begin rdoc
 Look Ma!, I can Has Reflect The Browser
 
@@ -130,4 +129,9 @@ module Watir
   class IE
     include Reflector
   end
+  
+  module Container
+    include Reflector
+  end
+  
 end

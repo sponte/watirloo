@@ -1,11 +1,11 @@
-= watirloo
+= Watirloo
 
-* Watirloo, a Watir Framework and Helper based on Page Objects Modeling
-* http://watirloo.testr.us/
+* http://watirloo.testr.us
 
 == DESCRIPTION:
 
-Page Objects Modeling helper. Helps you design tests expressing DOM elements and groups of elements 
+Watir Framework and Helper based on Semantic Page Objects Modeling. 
+Helps you design tests expressing DOM elements and groups of elements 
 on the page as Semantic Page Objects rather than their DOM implementations.
 It is not a DSL but it helps you write human readable tests and hooks them up 
 to Watir browsers for implementation
@@ -14,22 +14,27 @@ Give it a try. You will like it.
 
 == FEATURES/PROBLEMS:
 
-* everything is a Test Object. 
+* Watirloo::Page acts as an adapter with customer facing semantic names for page objects and developer facing implamention talking to the browser.
+* Page creates an abstraction adapter: Human Readable and Machine Executable.
 * Pages contain faces; page objects that are named with semantic intent
-* write tests based on usecase flow.
+* Best to work with one browser instance on the desktop.
+* Patches Watir and Firewatir to ease testing
+* groups radios in radio_group and checkboxes in checkbox_group and acts each group as page object
 
 == SYNOPSIS:
 
-  Given a page with text fields for last name and first name
-  we want to enter name 'Kurt Vonnegut'
-  
+By convention Watirloo::Page.new attaches itself to the existing IE browser instance on the desktop.
+
+Example: Given a page with text fields for last name and first name we want to enter name 'Kurt Vonnegut'
+You can define hash with key as semantic name and value as watir implementation
+
   page = Watirloo::Page.new
   page.add_face :last => [:text_field, :name, 'l_nm'],
   	:first => [:text_field, :name, 'f_nm']
   page.last.set "Vonnegut"
   page.first.set "Kurt"
 
-  or create a wrapper method that delegates to the browser
+Or you can create a wrapper method that delegates to the browser
   
   class Person < Watirloo::Page
     def last
@@ -40,18 +45,17 @@ Give it a try. You will like it.
     end
   end
   
-  or define hash where keys will match the defined faces to be set
+Or define a hash where key will match the defined faces to be set
   params = {:first => 'Kurt', :last => 'Vonnegut'}
   page = Watirloo::Page.new.spray params
   
-  or pass page cofiguration in the block at page creation
+Or pass page cofiguration in the block at page creation
   
   page = Person.new do
     last.set 'Vonnegut'
     first.set 'Kurt'
   end
  
-  Watirloo, a never ending fun with Semantic Test Intentions
   
 == REQUIREMENTS:
 

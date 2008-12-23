@@ -2,23 +2,21 @@ $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 require 'watirloo/watir_ducktape'
+require 'watirloo/reflector'
 
 module Watirloo
 
   VERSION = '0.0.1'
-
-  # generic exception for all watirloo kaka
-  class WatirlooException < Watir::Exception::WatirException
-  end
   
   # Generic Semantic Test Object
-  class TestObject
+  module TestObject
     attr_accessor :id, :desc
   
   end
 
   # browser. we return IE or Firefox. Safari? Other Browser?
-  class BrowserHerd < TestObject
+  class BrowserHerd 
+    include TestObject
     
     @@target = :ie #default target
 
@@ -50,7 +48,9 @@ module Watirloo
   # page objects are defined as faces of a Page.
   # Each face (aka Interface of a page) is accessed by page.facename or page.face(:facename) methods
   # Pages make Watir fun
-  class Page < TestObject
+  class Page
+    
+    include TestObject
     attr_accessor :b
     attr_reader :faces
 
@@ -106,7 +106,7 @@ module Watirloo
       elsif  @faces.member?(method.to_sym)
         get_face(method.to_sym)
       else
-        raise WatirlooException # I ran out of ideas!
+        raise Watir::Exception::WatirException # I ran out of ideas!
       end
     end
   end

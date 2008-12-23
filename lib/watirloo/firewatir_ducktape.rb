@@ -137,7 +137,7 @@ module FireWatir
       elsif what.kind_of?(String)
         get_by_value(what).set
       else
-        raise ::Watirloo::WatirlooException, "argument error #{what} not allowed"
+        raise ::Watir::Exception::WatirException, "argument error #{what} not allowed"
       end
     end
     
@@ -145,7 +145,7 @@ module FireWatir
       if hidden_values.member? value
         @o.find {|r| r.value == value}
       else
-        raise ::Watirloo::WatirlooException, "value #{value} not found in hidden values"
+        raise ::Watir::Exception::WatirException, "value #{value} not found in hidden values"
       end
     end
     
@@ -153,7 +153,7 @@ module FireWatir
       if (0..self.size).member? position
         @o[position-1]
       else
-        raise ::Watirloo::WatirlooException, "positon #{position} is out of range of size"
+        raise ::Watir::Exception::WatirException, "positon #{position} is out of range of size"
       end 
     end
     

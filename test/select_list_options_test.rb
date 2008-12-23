@@ -22,7 +22,10 @@ describe "select list page objects options as actual values not visible to the u
   end
   
   it 'options with no value attribute' do
+    # in case of IE it will return all blanks
     @page.toys.hidden_values.should == ["", "", "", "", ""]
+    # for Firfox it returns actual items ["", "foobel", "barbel", "bazbel", "chuchu"]
+    # known failure on Firefox
   end
   
   it 'options with no value attribute return items' do

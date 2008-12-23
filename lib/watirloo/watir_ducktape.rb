@@ -42,7 +42,7 @@ module Watir
       elsif what.kind_of?(String)
         get_by_value(what).set
       else
-        raise ::Watirloo::WatirlooException, "argument error #{what} not allowed"
+        raise ::Watir::Exception::WatirException, "argument error #{what} not allowed"
       end
     end
     
@@ -50,7 +50,7 @@ module Watir
       if hidden_values.member? value
         @o.find {|r| r.ole_object.invoke('value') == value}
       else
-        raise ::Watirloo::WatirlooException, "value #{value} not found in hidden_values"
+        raise ::Watir::Exception::WatirException, "value #{value} not found in hidden_values"
       end
     end
     
@@ -58,7 +58,7 @@ module Watir
       if (0..self.size).member? position
         @o[position-1]
       else
-        raise ::Watirloo::WatirlooException, "positon #{position} is out of range of #{size} items"
+        raise ::Watir::Exception::WatirException, "positon #{position} is out of range of #{size} items"
       end 
     end
     

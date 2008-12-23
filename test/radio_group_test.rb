@@ -69,13 +69,13 @@ describe 'radio group access method for set of radios' do
   end
   
   it 'set position throws exception if number not within the range of group size' do
-    assert_raise(Watirloo::WatirlooException) do
+    assert_raise(Watir::Exception::WatirException) do
       @page.food_group.set 7
     end
   end
   
   it 'set value throws exception if value not found in options' do
-    assert_raise(Watirloo::WatirlooException) do
+    assert_raise(Watir::Exception::WatirException) do
       @page.food_group.set 'banannnanna'
     end
   end
@@ -83,7 +83,7 @@ describe 'radio group access method for set of radios' do
   # TODO do I want to provide mapping of human generated semantic values for radios 
   # to actual values here in the radio_group or at the Watirllo level only? 
   it 'set accepts only Fixnum or String' do
-    assert_raise(Watirloo::WatirlooException)do
+    assert_raise(Watir::Exception::WatirException)do
       @page.food_group.set :yes
     end
   end

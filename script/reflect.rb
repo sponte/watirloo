@@ -1,4 +1,4 @@
-require 'watirloo/reflector'
+require 'watirloo'
 # simple implementation of reflector. Just reflect everything on the page.
 
 ie = Watir::IE.attach(:url, //)
