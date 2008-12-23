@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/test_setup'
+require File.dirname(__FILE__) + '/test_helper'
 
 # def wrappers with suggested semantic names for elements
 class Person < Watirloo::Page

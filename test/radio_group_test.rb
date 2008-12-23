@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/test_setup'
+require File.dirname(__FILE__) + '/test_helper'
 
 class RadioGroupPage < Watirloo::Page
   # array of radios sharing the same name

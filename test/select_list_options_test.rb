@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/test_setup'
+require File.dirname(__FILE__) + '/test_helper'
 
 describe "select list page objects options as actual values not visible to the user" do
   

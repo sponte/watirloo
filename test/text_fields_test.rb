@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/test_setup'
+require File.dirname(__FILE__) + '/test_helper'
 
 describe "add faces text fields page objects" do
   

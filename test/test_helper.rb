@@ -1,5 +1,6 @@
-require File.dirname(__FILE__) + '/../lib/watirloo'
+require 'stringio'
 require 'test/spec'
+require File.dirname(__FILE__) + '/../lib/watirloo'
 #Watirloo::BrowserHerd.target = :firefox
 
 def testfile(filename)

@@ -1,5 +1,4 @@
-require File.dirname(__FILE__) + '/test_setup'
-
+require File.dirname(__FILE__) + '/test_helper'
 describe 'label wrapping text field' do
   
   before do

@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../lib/firewatir_ducktape'
+require File.dirname(__FILE__) + '/../../lib/watirloo/firewatir_ducktape'
 
 # TESTS FIXME kill all browsers before and after the test
 require 'test/spec'
