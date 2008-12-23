@@ -1,11 +1,12 @@
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
-require 'watirloo/version'
 require 'watirloo/watir_ducktape'
 
 module Watirloo
-  
+
+  VERSION = '0.0.1'
+
   # generic exception for all watirloo kaka
   class WatirlooException < Watir::Exception::WatirException
   end
