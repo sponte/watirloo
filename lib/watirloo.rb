@@ -1,7 +1,8 @@
-# Test Objects Modeling In Watir. Project by marekj from testr.us.
-# let's see how this behavior modeling works.
+$:.unshift(File.dirname(__FILE__)) unless
+  $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
-require File.dirname(__FILE__) + '/watir_ducktape'
+require 'watirloo/version'
+require 'watirloo/watir_ducktape'
 
 module Watirloo
   
@@ -36,7 +37,7 @@ module Watirloo
       when :firefox
         gem 'firewatir', '>=1.6.2' # dependency
         require 'firewatir'
-        require File.dirname(__FILE__) + '/firewatir_ducktape'
+        require 'watirloo/firewatir_ducktape'
         # this is a cruch for quick work with pages.
         # in reality you want to create a browser and pass it as argument to initialize Page class
         FireWatir::Firefox.attach #this attach is a crutch

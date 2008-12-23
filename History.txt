@@ -1,0 +1,15 @@
+== 0.0.1 2008-12-22
+
+* Gem
+  * merge with newgem generated structure to make it a gem
+* Patches to Watir and Firewatir
+  * radio_group method added to Watir (not to FireWatir yet)
+  * patch fof Firefox.attach to just attach to the latest window without starting new ff win.
+* tests
+  * built with intent to run unchanged on IE and Firefox
+  * tests run on test/spec gem
+
+== 0.0.0 
+
+* start collecting ideas about building an abstratction layer 
+based on semantic domain model vocabulary customers speak.
