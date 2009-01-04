@@ -2,6 +2,7 @@ History.txt
 Manifest.txt
 README.rdoc
 Rakefile.rb
+lib/watirloo
 lib/watirloo.rb
 lib/watirloo/firewatir_ducktape.rb
 lib/watirloo/reflector.rb
@@ -15,7 +16,9 @@ script/generate.cmd
 script/reflect.rb
 test/checkbox_group_test.rb
 test/checkboxes_value_test.rb
+test/firewatir
 test/firewatir/attach_instance_test.rb
+test/html
 test/html/census.html
 test/html/checkbox_group1.html
 test/html/labels.html
@@ -30,3 +33,4 @@ test/select_list_options_test.rb
 test/select_lists_test.rb
 test/test_helper.rb
 test/text_fields_test.rb
+watirloo.gemspec

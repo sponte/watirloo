@@ -6,7 +6,7 @@ require 'watirloo/reflector'
 
 module Watirloo
 
-  VERSION = '0.0.1'
+  VERSION = '0.0.2' # Jan2009
   
   # Generic Semantic Test Object
   module TestObject
@@ -34,8 +34,6 @@ module Watirloo
       when :ie 
         Watir::IE.attach :url, // #this attach is a crutch
       when :firefox
-        gem 'firewatir', '>=1.6.2' # dependency
-        require 'firewatir'
         require 'watirloo/firewatir_ducktape'
         # this is a cruch for quick work with pages.
         # in reality you want to create a browser and pass it as argument to initialize Page class
@@ -88,6 +86,7 @@ module Watirloo
         return @b.send(method, *args)
       else
         #??? I ran out of ideas
+        raise ::Watir::Exception::WatirException, 'I ran out of ideas in Watirloo'
       end
     end
     alias face get_face
@@ -106,7 +105,7 @@ module Watirloo
       elsif  @faces.member?(method.to_sym)
         get_face(method.to_sym)
       else
-        raise Watir::Exception::WatirException # I ran out of ideas!
+        raise ::Watir::Exception::WatirException, 'I ran out of ideas in Watirloo'
       end
     end
   end

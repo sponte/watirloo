@@ -1,3 +1,4 @@
+gem 'firewatir', '>=1.6.2' # dependency
 require 'firewatir'
 
 module FireWatir
@@ -101,24 +102,12 @@ module FireWatir
     alias items getAllContents
   end
 
-  class RadioGroup
+  module RadioCheckGroupCommon
     
-    def initialize(container, name)
-      @container = container
-      @name = name
-      @o = []
-      @container.radios.each do |r| #TODO find why find_all does not work
-        if r.name == @name
-          @o << r
-        end
-      end
-      return @o
-    end
-    
-    def hidden_values
-      opts = []
-      @o.each {|r| opts << r.value}
-      return opts
+    def values
+      values = []
+      @o.each {|thing| values << thing.value}
+      return values
     end
     
     def size
@@ -126,24 +115,23 @@ module FireWatir
     end
     alias count size
     
-    # which value is selected?
-    def selected_hidden_value
-      selected_radio.value
-    end
-    
     def set(what)
-      if what.kind_of?(Fixnum)
-        get_by_position(what).set
-      elsif what.kind_of?(String)
-        get_by_value(what).set
+      if what.kind_of?(Array)
+        what.each {|thing| set thing } #calls itself with Fixnum or String
       else
-        raise ::Watir::Exception::WatirException, "argument error #{what} not allowed"
+        if what.kind_of?(Fixnum)
+          get_by_position(what).set
+        elsif what.kind_of?(String)
+          get_by_value(what).set
+        else
+          raise ::Watir::Exception::WatirException, "argument error #{what} not allowed"
+        end
       end
     end
     
     def get_by_value value
-      if hidden_values.member? value
-        @o.find {|r| r.value == value}
+      if values.member? value
+        @o.find {|thing| thing.value == value}
       else
         raise ::Watir::Exception::WatirException, "value #{value} not found in hidden values"
       end
@@ -157,14 +145,74 @@ module FireWatir
       end 
     end
     
+  end
+  
+  class CheckboxGroup
+    include RadioCheckGroupCommon
+    
+    def initialize(container, name)
+      @container = container
+      @name = name
+      @o = []
+      @container.checkboxes.each do |cb| #TODO find why find_all does not work
+        if cb.name == @name
+          @o << cb
+        end
+      end
+      return @o
+    end
+    
+    # which values are selected?
+    def selected_values
+      values = []
+      selected_checkboxes.each do |cb|
+        values << cb.value
+      end
+      return values
+    end
+    
+    def selected_checkboxes
+      @o.select {|cb| cb.isSet?}
+    end
+    alias selected selected_checkboxes
+    
+  end
+  
+  class RadioGroup
+    include RadioCheckGroupCommon
+    
+    def initialize(container, name)
+      @container = container
+      @name = name
+      @o = []
+      @container.radios.each do |r| #TODO find why find_all does not work
+        if r.name == @name
+          @o << r
+        end
+      end
+      return @o
+    end
+    
+    # which value is selected?
+    def selected_value
+      selected_radio.value
+    end
+    
+    # returns selected radio in radio group
     def selected_radio
       @o.find {|r| r.isSet?}
     end
+    alias selected selected_radio
+    
   end
   
   module Container
     def radio_group(name)
       RadioGroup.new(self, name)
+    end
+    
+    def checkbox_group(name)
+      CheckboxGroup.new(self, name)
     end
   end
 end

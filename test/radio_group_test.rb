@@ -6,6 +6,7 @@ class RadioGroupPage < Watirloo::Page
   # @b.radios.find_all {|r| r.name == 'food'} 
   # find_all is undefined for radios method
   # the solution is to do radios.each implementation
+  # returns array of radios sharing the same name
   def food
     o = []
     @b.radios.each do |r|
@@ -22,14 +23,14 @@ class RadioGroupPage < Watirloo::Page
   end
 end
 
-describe 'radio group access method for set of radios' do
+describe 'food_group as RadioGroup class' do
 
   before do
     @page = RadioGroupPage.new
     @page.b.goto testfile('radio_group.html')
   end
   
-  it 'radio_group returns RadioGroup clas' do
+  it 'container radio_group method returns RadioGroup class' do
     if @page.b.kind_of?(FireWatir::Firefox)
       @page.food_group.kind_of?(FireWatir::RadioGroup).should.be true
       
@@ -39,33 +40,30 @@ describe 'radio group access method for set of radios' do
   end
   
   it 'size or count returns how many radios in a group' do
-    @page.food.size.should == 3
     @page.food_group.size.should == 3
     @page.food_group.count.should == 3
   end
   
-  it 'options returns value attributes as an array' do
-    @page.food_group.hidden_values.should == ["hotdog", "burger", "tofu"]
+  it 'values returns value attributes text items as an array' do
+    @page.food_group.values.should == ["hotdog", "burger", "tofu"]
   end
   
-  it 'value returns internal option value for selected radio item in a group' do 
-    # return by finding the set item and get its value
-    # the following find with ole_object does not work on firefox
-    #@page.food.find {|r| r.isSet?}.ole_object.invoke('value').should == 'burger' 
-    # get value of radio group
-    @page.food_group.selected_hidden_value.should == 'burger'
+  it 'selected_value returns internal option value for selected radio item in a group' do 
+    @page.food_group.selected_value.should == 'burger'
   end
   
   it 'set selects radio by position in a group' do
     @page.food_group.set 3
-    @page.food_group.selected_hidden_value.should == 'tofu'
+    @page.food_group.selected_value.should == 'tofu'
     @page.food_group.set 1
-    @page.food_group.selected_hidden_value.should == 'hotdog'
+    @page.food_group.selected_value.should == 'hotdog'
   end
   
   it 'set selects radio by value in a group' do
     @page.food_group.set 'hotdog'
-    @page.food_group.selected_hidden_value.should == 'hotdog'
+    @page.food_group.selected_value.should == 'hotdog'
+    @page.food_group.set 'tofu'
+    @page.food_group.selected_value.should == 'tofu'
   end
   
   it 'set position throws exception if number not within the range of group size' do
@@ -82,7 +80,7 @@ describe 'radio group access method for set of radios' do
   
   # TODO do I want to provide mapping of human generated semantic values for radios 
   # to actual values here in the radio_group or at the Watirllo level only? 
-  it 'set accepts only Fixnum or String' do
+  it 'set throws exception if other than Fixnum or String element is used' do
     assert_raise(Watir::Exception::WatirException)do
       @page.food_group.set :yes
     end

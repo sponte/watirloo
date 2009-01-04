@@ -4,23 +4,9 @@ require 'watir/ie'
 
 module Watir
   
-  # radios that share the same name form a RadioGroup. 
-  # RadioGroup models the behavior of that set as an Object
-  # access using :radio_group method
-  # usage: Watir::Container#radio_group method returns this object
-  # 
-  #   @browser = Watir::IE.attach :url, //
-  #   @browser.radio_group('food') # => RadioGroup
-  
-  class RadioGroup
+  module RadioCheckGroupCommon
     
-    def initialize(container, name)
-      @container = container
-      @name = name
-      @o = @container.radios.find_all {|r| r.name == @name}
-    end
-    
-    def hidden_values
+    def values
       opts = []
       @o.each {|r| opts << r.ole_object.invoke('value')}
       return opts
@@ -31,23 +17,24 @@ module Watir
     end
     alias count size
     
-    # which value is selected?
-    def selected_hidden_value
-      selected_radio.ole_object.invoke('value')
-    end
-    
+    # sets Radio||Checkbox in a group by either position in a group or by hidden value attribute 
     def set(what)
-      if what.kind_of?(Fixnum)
-        get_by_position(what).set
-      elsif what.kind_of?(String)
-        get_by_value(what).set
+      if what.kind_of?(Array)
+        what.each {|el| set el } #calls itself with Fixnum or String
       else
-        raise ::Watir::Exception::WatirException, "argument error #{what} not allowed"
+        if what.kind_of?(Fixnum)
+          get_by_position(what).set
+        elsif what.kind_of?(String)
+          get_by_value(what).set
+        else
+          raise ::Watir::Exception::WatirException, "argument error #{what} not allowed"
+        end
       end
     end
     
+    #returns Radio||Checkbox from a group that has specified value attribute set to provided value text
     def get_by_value value
-      if hidden_values.member? value
+      if values.member? value
         @o.find {|r| r.ole_object.invoke('value') == value}
       else
         raise ::Watir::Exception::WatirException, "value #{value} not found in hidden_values"
@@ -62,14 +49,85 @@ module Watir
       end 
     end
     
+  end
+  # radios that share the same name form a RadioGroup. 
+  # RadioGroup models the behavior of that set as an Object
+  # You can access RadioGroup with the radio_group method and name attribute
+  # just like you access radio.
+  # usage: Watir::Container#radio_group method returns this object
+  # RadioGroup semantically behaves like single select list box.
+  # per html4.1 an item needs to be preselected in radio group. 
+  # There can not be radio group with all items off. At least one needs to be on by default.
+  # The idea of having all radios off makes no sense but in the wild you can see lots of examples.
+  # it would be better to just have a single select list box with no items selected instead of radios.
+  # The point of having radios is that at least one radio is on providing a default value for the group
+  # 
+  #   @browser = Watir::IE.attach :url, //
+  #   @browser.radio_group('food') # => RadioGroup
+  class RadioGroup
+    
+    include RadioCheckGroupCommon
+    
+    def initialize(container, name)
+      @container = container
+      @name = name
+      @o = @container.radios.find_all {|r| r.name == @name}
+    end
+    
+    # which value is selected?
+    def selected_value
+      selected_radio.ole_object.invoke('value')
+    end
+    
+    # returns radio that is selected.
+    # there can only be one radio selected. 
+    # in the event that none is selected it returns nil
     def selected_radio
       @o.find {|r| r.isSet?}
     end
+    alias selected selected_radio
+    
   end
+  
+  # Checkbox group semantically behaves like multi select list box.
+  # each checkbox is a menu item groupped by the common attribute :name
+  # each checkbox can be off initially (a bit different semantics than RadioGroup)
+  class CheckboxGroup
+    
+    include RadioCheckGroupCommon
+    
+    def initialize(container, name)
+      @container = container
+      @name = name
+      @o = @container.checkboxes.find_all {|cb| cb.name == @name}
+    end
+    
+    # returns selected checkboxex as array
+    # [] = nothing selected
+    # [checkbox, checkbox] = checkboxes that are selected.
+    def selected_checkboxes
+      @o.select {|cb| cb.isSet?}
+    end
+    alias selected selected_checkboxes
+    
+    def selected_values
+      values = []
+      selected_checkboxes.each do |cb|
+        values << cb.ole_object.invoke('value')
+      end
+      return values
+    end
+    
+  end
+
   
   module Container
     def radio_group(name)
       RadioGroup.new(self, name)
+    end
+      
+    def checkbox_group(name)
+      CheckboxGroup.new(self, name)
     end
   end
   
@@ -116,7 +174,7 @@ module Watir
     # example select_list.value = '' # => select list has item with text '' selected or multiselect list has no values set
     def value
       a = getSelectedItems
-      return case a.size
+      return case a.size #TODO find if nil is better than empty string
       when 0 then ''
       when 1 then a[0]
       else a
