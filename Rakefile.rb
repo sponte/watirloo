@@ -25,10 +25,6 @@ end
 require 'newgem/tasks' # load /tasks/*.rake
 Dir['tasks/**/*.rake'].each { |t| load t }
 
-# TODO - want other tests/tasks run by default? Add them to the list
-# task :default => [:spec, :features]
-
-
 desc "run all tests on IE."
 task :test_ie do
   # all tests use attach method to a browser that exit on the desktop

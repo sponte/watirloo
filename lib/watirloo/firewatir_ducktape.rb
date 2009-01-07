@@ -3,7 +3,9 @@ require 'firewatir'
 
 module FireWatir
   
-  # duck punch Firefox for Watirloo needs
+  # duck punch and ducktape Firefox for Watirloo needs
+  # some of it is cosmetic surgery and some new methods with intention of
+  # sending a patch to Watir maintainers
   class Firefox
     
     # attach to the existing Firefox that was already started with JSSH option.
@@ -15,6 +17,7 @@ module FireWatir
     
     # add option key :attach as a hack
     # :attach => true to attach to topmost window in getWindows().lenght-1
+    # split up initialize to conditionally start FireFox
     def initialize(options = {})
       _start_firefox(options) unless options[:attach]
       set_defaults()
@@ -22,7 +25,7 @@ module FireWatir
       set_browser_document()
     end
     
-    
+    # refactor initialize method to move all starting of FF into its own method
     def _start_firefox(options)
       if(options.kind_of?(Integer))
         options = {:waitTime => options}
@@ -69,28 +72,31 @@ module FireWatir
 
   class SelectList
     
-    # FIXME this is the duplicate code from Watir::SelectList
-    def value
-      a = getSelectedItems
-      return case a.size
-      when 0 then ''
-      when 1 then a[0]
-      else a
-      end
+    include Watir::SelectListCommonWatir
+    
+        # accepts one text item or array of text items. if array then sets one after another. 
+    # For single select lists the last item in array wins
+    # 
+    # examples
+    #   select_list.set 'bla' # => single option text
+    #   select_list.set ['bla','foo','gugu'] # => set 3 options by text. If 
+    #       this is a single select list box it will set each value in turn
+    #   select_list set 1 # => set the first option in a list
+    #   select_list.set [1,3,5] => set the first, third and fith options
+    def set(item)
+      _set(:text, item)
     end
 
-    # FIXME this is dupcliate code from Watir::SelectList
-    def set(item)
-      if item.kind_of? Array
-        item.each do |single_item|
-          select_item_in_select_list(:text, single_item)
-        end
-      elsif item.kind_of? String
-        select_item_in_select_list(:text, item)
-      end
+    # set item by the option value attribute. if array then set one after anohter.
+    # see examples in set method
+    def set_value(value)
+      _set(:value, value)
     end
     
-    def hidden_values
+    # returns array of value attributes
+    # each option usually has a value attribute 
+    # which is hidden to the person viewing the page
+    def values
       a = []
       items.each do |item|
         a << option(:text, item).value
@@ -99,34 +105,21 @@ module FireWatir
     end
     
     alias clear clearSelection
+    
+    # alias, items or contents return the same visible text items
     alias items getAllContents
+    
   end
 
-  module RadioCheckGroupCommon
+  # RadioGroup and CheckboxGroup common behaviour
+  module RadioCheckGroup
     
+    include Watir::RadioCheckGroupCommonWatir
+
     def values
       values = []
       @o.each {|thing| values << thing.value}
       return values
-    end
-    
-    def size
-      @o.size
-    end
-    alias count size
-    
-    def set(what)
-      if what.kind_of?(Array)
-        what.each {|thing| set thing } #calls itself with Fixnum or String
-      else
-        if what.kind_of?(Fixnum)
-          get_by_position(what).set
-        elsif what.kind_of?(String)
-          get_by_value(what).set
-        else
-          raise ::Watir::Exception::WatirException, "argument error #{what} not allowed"
-        end
-      end
     end
     
     def get_by_value value
@@ -136,19 +129,12 @@ module FireWatir
         raise ::Watir::Exception::WatirException, "value #{value} not found in hidden values"
       end
     end
-    
-    def get_by_position position
-      if (0..self.size).member? position
-        @o[position-1]
-      else
-        raise ::Watir::Exception::WatirException, "positon #{position} is out of range of size"
-      end 
-    end
-    
   end
   
   class CheckboxGroup
-    include RadioCheckGroupCommon
+    
+    include RadioCheckGroup
+    include Watir::CheckboxGroupCommonWatir
     
     def initialize(container, name)
       @container = container
@@ -159,7 +145,6 @@ module FireWatir
           @o << cb
         end
       end
-      return @o
     end
     
     # which values are selected?
@@ -170,16 +155,12 @@ module FireWatir
       end
       return values
     end
-    
-    def selected_checkboxes
-      @o.select {|cb| cb.isSet?}
-    end
-    alias selected selected_checkboxes
-    
   end
   
   class RadioGroup
-    include RadioCheckGroupCommon
+    
+    include RadioCheckGroup
+    include Watir::RadioGroupCommonWatir
     
     def initialize(container, name)
       @container = container
@@ -193,18 +174,13 @@ module FireWatir
       return @o
     end
     
-    # which value is selected?
+    # see Watir::RadioGroup.selected_value
     def selected_value
       selected_radio.value
     end
-    
-    # returns selected radio in radio group
-    def selected_radio
-      @o.find {|r| r.isSet?}
-    end
-    alias selected selected_radio
-    
+    alias selected selected_value
   end
+  
   
   module Container
     def radio_group(name)
